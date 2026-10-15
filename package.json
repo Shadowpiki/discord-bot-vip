@@ -1,0 +1,22 @@
+{
+  "name": "discord-bot-vip",
+  "version": "1.0.0",
+  "description": "Bot de Discord con versión gratuita y premium.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shadowpiki/discord-bot-vip.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Shadowpiki/discord-bot-vip/issues"
+  },
+  "homepage": "https://github.com/Shadowpiki/discord-bot-vip#readme",
+  "dependencies": {
+    "discord.js": "^14.27.0"
+  }
+}
