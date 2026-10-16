@@ -4,7 +4,8 @@
   "description": "Bot de Discord con versión gratuita y premium.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/Shadowpiki/discord-bot-vip#readme",
   "dependencies": {
-    "discord.js": "^14.27.0"
+    "discord.js": "^14.27.0",
+    "dotenv": "^18.0.8"
   }
 }

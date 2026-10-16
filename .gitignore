@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Datos locales de Thalira
+data/
+
+# Copias de seguridad locales
+*.backup
+*.backup-*
