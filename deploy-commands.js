@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 const {
@@ -13,7 +12,7 @@ const clientId = process.env.DISCORD_CLIENT_ID;
 const guildId = process.env.DISCORD_GUILD_ID;
 
 if (!token || !clientId || !guildId) {
-  console.error('ERROR: Faltan datos en el archivo .env');
+  console.error('ERROR: Missing configuration in .env');
   process.exit(1);
 }
 
@@ -33,63 +32,94 @@ const languages = [
 const commands = [
   new SlashCommandBuilder()
     .setName('thalira')
-    .setDescription('Comprueba que Thalira funciona correctamente.'),
+    .setDescription('Check that Thalira is working.'),
 
   new SlashCommandBuilder()
-    .setName('quien-soy')
-    .setDescription('Descubre quién eres para Thalira.'),
+    .setName('who-am-i')
+    .setDescription('Discover how Thalira recognizes you.'),
 
   new SlashCommandBuilder()
-    .setName('idioma')
-    .setDescription('Cambia tu idioma personal en este servidor.')
+    .setName('language')
+    .setDescription('Change your personal language in this server.')
     .addStringOption(option =>
-      option
-        .setName('idioma')
-        .setDescription('Selecciona tu idioma personal.')
+      option.setName('language')
+        .setDescription('Choose your personal language.')
         .setRequired(true)
         .addChoices(...languages)
     ),
 
   new SlashCommandBuilder()
-    .setName('idioma-servidor')
-    .setDescription('Cambia el idioma predeterminado del servidor.')
+    .setName('server-language')
+    .setDescription('Change the default language for this server.')
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addStringOption(option =>
-      option
-        .setName('idioma')
-        .setDescription('Selecciona el idioma del servidor.')
+      option.setName('language')
+        .setDescription('Choose the server language.')
         .setRequired(true)
         .addChoices(...languages)
     ),
 
   new SlashCommandBuilder()
     .setName('premium')
-    .setDescription('Consulta el estado de Premium de este servidor.'),
+    .setDescription('Check this server’s Premium subscription status.'),
+
+  new SlashCommandBuilder()
+    .setName('help')
+    .setDescription('View Thalira’s commands and features.'),
+
+  new SlashCommandBuilder()
+    .setName('about')
+    .setDescription('Learn about Thalira and her purpose.'),
+
+  new SlashCommandBuilder()
+    .setName('bot-info')
+    .setDescription('View information about Thalira.'),
+
+  new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Check Thalira’s latency.'),
+
+  new SlashCommandBuilder()
+    .setName('user-info')
+    .setDescription('View information about a member.')
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('The user you want to inspect.')
+        .setRequired(false)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('server-info')
+    .setDescription('View information about this server.'),
+
+  new SlashCommandBuilder()
+    .setName('avatar')
+    .setDescription('Show a user’s avatar.')
+    .addUserOption(option =>
+      option.setName('user')
+        .setDescription('The user whose avatar you want to see.')
+        .setRequired(false)
+    ),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);
 
 async function main() {
   try {
-    console.log('Registrando los comandos de Thalira...');
+    console.log('Preparing to register Thalira commands...');
+    console.log(`Total commands: ${commands.length}`);
 
     await rest.put(
       Routes.applicationGuildCommands(clientId, guildId),
       { body: commands }
     );
 
-    console.log('¡Comandos registrados correctamente!');
-    console.log('/thalira');
-    console.log('/quien-soy');
-    console.log('/idioma');
-    console.log('/idioma-servidor');
-    console.log('/premium');
+    console.log('Commands registered successfully.');
   } catch (error) {
-    console.error('No se pudieron registrar los comandos.');
-    console.error('Detalle:', error.message);
+    console.error('Failed to register commands.');
+    console.error('Details:', error.message);
     process.exitCode = 1;
   }
 }
 
 main();
-

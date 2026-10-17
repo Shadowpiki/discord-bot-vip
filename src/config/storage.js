@@ -56,7 +56,7 @@ function getGuildSettings(guildId) {
 
   if (!data.guilds[guildId]) {
     data.guilds[guildId] = {
-      language: 'es',
+      language: 'en',
       features: {},
       style: 'friendly',
     };
@@ -80,7 +80,7 @@ function setGuildLanguage(guildId, language) {
 
   if (!data.guilds[guildId]) {
     data.guilds[guildId] = {
-      language: 'es',
+      language: 'en',
       features: {},
       style: 'friendly',
     };
@@ -147,7 +147,7 @@ function getEffectiveLanguage(guildId, userId, discordLocale) {
     return detectedLanguage;
   }
 
-  return 'es';
+  return 'en';
 }
 
 module.exports = {
