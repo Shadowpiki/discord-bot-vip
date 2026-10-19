@@ -148,3 +148,6 @@ data/
 # Copias de seguridad locales
 *.backup
 *.backup-*
+
+# Respaldos locales de desarrollo
+backups/

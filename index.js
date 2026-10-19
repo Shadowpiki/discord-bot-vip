@@ -18,6 +18,7 @@ const {
 } = require('./src/config/storage');
 
 const {
+  LANGUAGES,
   translate,
   isSupportedLanguage,
 } = require('./src/i18n');
@@ -53,6 +54,8 @@ client.once(Events.ClientReady, (bot) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  let responseLanguage = 'en';
+
   try {
     const command = interaction.commandName;
     const guildId = interaction.guildId;
@@ -61,7 +64,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (!guildId) {
       await interaction.reply({
-        content: 'Este comando solo puede utilizarse dentro de un servidor.',
+        content: translate('en', 'outsideGuild'),
         flags: MessageFlags.Ephemeral,
       });
       return;
@@ -76,6 +79,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     if (!isSupportedLanguage(language)) {
       language = 'en';
     }
+    responseLanguage = language;
 
     // COMANDOS PUBLICOS
     if (command === 'thalira') {
@@ -101,13 +105,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
         )
       ) {
         await interaction.reply({
-          content: 'Eres administrador de este servidor y responsable de su comunidad. ¡Gracias por ayudar a cuidarla!',
+          content: translate(language, 'whoAdmin'),
         });
         return;
       }
 
       await interaction.reply({
-        content: 'Eres un miembro de esta comunidad. ¡Encantada de conocerte!',
+        content: translate(language, 'whoMember'),
       });
       return;
     }
@@ -120,19 +124,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
       let response;
 
       if (active) {
+        const locale = LANGUAGES[language]?.locale || LANGUAGES.en.locale;
         const expiry = new Date(subscription.expiresAt).toLocaleDateString(
-          'es-ES',
+          locale,
           { year: 'numeric', month: 'long', day: 'numeric' }
         );
 
         response =
-          `✨ **Premium está activo en este servidor.**\n` +
-          `Fecha de vencimiento: ${expiry}.\n` +
-          'La gestión de la suscripción corresponde a los administradores autorizados del servidor.';
+          `✨ **${translate(language, 'premiumActive')}**\n` +
+          `${translate(language, 'premiumExpiry')} ${expiry}.\n` +
+          translate(language, 'premiumManage');
       } else {
         response =
-          'ℹ️ **Este servidor no tiene una suscripción Premium activa.**\n' +
-          'La consulta funciona, pero las compras y activaciones todavía no están habilitadas.';
+          `ℹ️ **${translate(language, 'premiumInactive')}**\n` +
+          translate(language, 'premiumUnavailable');
       }
 
       await interaction.reply({
@@ -239,19 +244,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       const embed = new EmbedBuilder()
         .setColor(0x8A6DCC)
-        .setTitle('🤖 Información de Thalira')
+        .setTitle(translate(language, 'botInfoTitle'))
         .setThumbnail(client.user.displayAvatarURL())
         .addFields(
-          { name: 'Nombre', value: client.user.username, inline: true },
-          { name: 'Versión de discord.js', value: version, inline: true },
-          { name: 'Servidores', value: String(client.guilds.cache.size), inline: true },
+          { name: translate(language, 'botName'), value: client.user.username, inline: true },
+          { name: translate(language, 'botVersion'), value: version, inline: true },
+          { name: translate(language, 'botServers'), value: String(client.guilds.cache.size), inline: true },
           {
-            name: 'Tiempo activa',
-            value: `${days} d, ${hours} h, ${minutes} min, ${seconds} s`,
+            name: translate(language, 'botUptime'),
+            value: `${days} ${translate(language, 'uptimeDays')}, ${hours} ${translate(language, 'uptimeHours')}, ${minutes} ${translate(language, 'uptimeMinutes')}, ${seconds} ${translate(language, 'uptimeSeconds')}`,
             inline: false,
           },
           {
-            name: 'Latencia de Discord',
+            name: translate(language, 'botLatency'),
             value: `${Math.round(client.ws.ping)} ms`,
             inline: true,
           }
@@ -271,9 +276,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       await interaction.reply({
         content:
-          `🏓 **¡Pong!**\n` +
-          `Latencia de la interacción: **${interactionLatency} ms**\n` +
-          `Latencia de la conexión con Discord: **${gatewayLatency} ms**`,
+          `🏓 **${translate(language, 'pingPong')}**\n` +
+          `${translate(language, 'pingInteraction')}: **${interactionLatency} ms**\n` +
+          `${translate(language, 'pingDiscord')}: **${gatewayLatency} ms**`,
       });
       return;
     }
@@ -284,28 +289,28 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       const embed = new EmbedBuilder()
         .setColor(0x8A6DCC)
-        .setTitle(`👤 Información de ${target.username}`)
+        .setTitle(`${translate(language, 'userInfoTitle')} ${target.username}`)
         .setThumbnail(target.displayAvatarURL({ size: 256 }))
         .addFields(
-          { name: 'Nombre de usuario', value: target.username, inline: true },
-          { name: 'ID de Discord', value: target.id, inline: true },
+          { name: translate(language, 'userName'), value: target.username, inline: true },
+          { name: translate(language, 'userId'), value: target.id, inline: true },
           {
-            name: 'Cuenta creada',
+            name: translate(language, 'userCreated'),
             value: `<t:${Math.floor(target.createdTimestamp / 1000)}:F>`,
             inline: false,
           },
           {
-            name: 'Se unió al servidor',
+            name: translate(language, 'userJoined'),
             value: member?.joinedTimestamp
               ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:F>`
-              : 'Fecha no disponible en la caché.',
+              : translate(language, 'userJoinedUnavailable'),
             inline: false,
           }
         );
 
       if (target.discriminator && target.discriminator !== '0') {
         embed.addFields({
-          name: 'Etiqueta antigua',
+          name: translate(language, 'userLegacyTag'),
           value: target.discriminator,
           inline: true,
         });
@@ -326,20 +331,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
         .setTitle(`🏰 ${guild.name}`)
         .setThumbnail(guild.iconURL({ size: 256 }) || null)
         .addFields(
-          { name: 'ID del servidor', value: guild.id, inline: true },
-          { name: 'Miembros', value: String(guild.memberCount), inline: true },
+          { name: translate(language, 'serverId'), value: guild.id, inline: true },
+          { name: translate(language, 'serverMembers'), value: String(guild.memberCount), inline: true },
           {
-            name: 'Propietario',
+            name: translate(language, 'serverOwner'),
             value: `<@${guild.ownerId}>`,
             inline: true,
           },
           {
-            name: 'Servidor creado',
+            name: translate(language, 'serverCreated'),
             value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:F>`,
             inline: false,
           },
-          { name: 'Canales en caché', value: String(guild.channels.cache.size), inline: true },
-          { name: 'Roles en caché', value: String(guild.roles.cache.size), inline: true }
+          { name: translate(language, 'serverChannels'), value: String(guild.channels.cache.size), inline: true },
+          { name: translate(language, 'serverRoles'), value: String(guild.roles.cache.size), inline: true }
         );
 
       await interaction.reply({ embeds: [embed] });
@@ -355,7 +360,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
       const embed = new EmbedBuilder()
         .setColor(0x8A6DCC)
-        .setTitle(`🖼️ Avatar de ${target.username}`)
+        .setTitle(`🖼️ ${translate(language, 'avatarTitle')} ${target.username}`)
         .setImage(avatarUrl)
         .setURL(avatarUrl);
 
@@ -367,7 +372,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     console.error('Error al procesar un comando:', error);
 
     const response = {
-      content: 'Ha ocurrido un error al ejecutar el comando. Inténtalo de nuevo.',
+      content: translate(responseLanguage, 'commandError'),
       flags: MessageFlags.Ephemeral,
     };
 
