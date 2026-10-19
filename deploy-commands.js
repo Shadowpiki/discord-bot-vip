@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { applyCommandLocalizations } = require('./src/i18n/command-localizations');
 
 const {
   REST,
@@ -100,7 +101,10 @@ const commands = [
         .setDescription('The user whose avatar you want to see.')
         .setRequired(false)
     ),
-].map(command => command.toJSON());
+].map(command => {
+  applyCommandLocalizations(command, command.name);
+  return command.toJSON();
+});
 
 const rest = new REST({ version: '10' }).setToken(token);
 
